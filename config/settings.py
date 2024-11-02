@@ -1,7 +1,7 @@
 import os
 from datetime import timedelta
 from pathlib import Path
-from celery.schedules import crontab
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,6 +10,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 
 DEBUG = os.getenv('DJANGO_DEBUG', False).lower() == 'true'
 
@@ -34,6 +35,12 @@ ROOT_URLCONF = 'config.urls'
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# --------------------------------------------------- Settings CORS ----------------------------------------------------
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+
 # ----------------------------------------------- Application definition -----------------------------------------------
 INSTALLED_APPS = [
     'rest_framework',
@@ -48,12 +55,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'drf_yasg',
-
-    # 'users',
+    'corsheaders',
+    'users',
+    'habits',
 ]
 
 # ----------------------------------------------------- MIDDLEWARE -----------------------------------------------------
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,8 +78,7 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -149,8 +159,8 @@ CELERY_TASK_TRACK_STARTED = os.getenv('CELERY_TASK_TRACK_STARTED', False).lower(
 CELERY_TASK_TIME_LIMIT = 30 * 60  # Максимальное время на выполнение задачи
 
 CELERY_BEAT_SCHEDULE = {
-    'deactivate_inactive_users_daily': {
-        'task': 'lms.tasks.deactivate_inactive_users',
-        'schedule': crontab(hour=0, minute=0),  # Запуск каждый день в полночь
+    'send-habit-reminders-every-minute': {
+        'task': 'habits.tasks.check_habit_reminders',
+        'schedule': 60.0,  # Проверять каждую минуту
     },
 }
