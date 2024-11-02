@@ -9,7 +9,7 @@ from users.models import User
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'email', 'phone_number',]
+        fields = ['id', 'first_name', 'email', 'phone_number', 'telegram_chat_id',]
 
     def validate(self, attrs):
         """Проверка на изменения системных полей"""
@@ -25,6 +25,11 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
+
+        # Добавление пользовательских полей в токен
+        token['first_name'] = user.first_name
+        token['email'] = user.email
+
         return token
 
 
