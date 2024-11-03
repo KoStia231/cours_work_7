@@ -9,7 +9,7 @@ class CourseAdmin(admin.ModelAdmin):
         'id', 'autor', 'title', 'place',
         'duration', 'time_action', 'action', 'prize',
         'is_pleasant', 'last_performed', 'execution_interval_day',
-        'execution_interval_hour', 'related', 'is_public',
+        'related', 'is_public',
     )
     search_fields = ('id', 'autor', 'title', 'is_public',)
     list_filter = ('id', 'autor', 'title', 'is_public',)

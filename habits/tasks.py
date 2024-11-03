@@ -1,49 +1,49 @@
-import telegram
+import logging
 from celery import shared_task
-from django.conf import settings
 from django.utils import timezone
+from asgiref.sync import async_to_sync
+from habits.models import Habit
+from habits.utils import send_habit_reminder
 
-from .models import Habit
-
-
-def send_habit_reminder(chat_id, habit_title):
-    try:
-        bot = telegram.Bot(token=settings.TELEGRAM_BOT_TOKEN)
-        message = f'Напоминание: пора выполнить привычку "{habit_title}" через 5 минут!'
-        bot.send_message(chat_id=chat_id, text=message)
-    except telegram.error.TelegramError as e:
-        print(f"Ошибка отправки сообщения: {e}")
+logger = logging.getLogger('habits.tasks')
 
 
 @shared_task
 def check_habit_reminders():
     now = timezone.now()
     today = now.date()
-    habits = Habit.objects.all()
+
+    logger.debug("Starting habit reminders check")
+    habits = Habit.objects.filter(is_active=True)
 
     for habit in habits:
-        # Расчет время выполнения привычки сегодня
+        logger.debug(
+            f"Checking habit: {habit.title}, last_performed: {habit.last_performed}, time_action: {habit.time_action}")
+
         action_time_today = timezone.make_aware(
             timezone.datetime.combine(today, habit.time_action)
         )
 
-        # Если привычка повторяется каждые N дней или часов, добавляет их к `last_performed`
+        # Условие для следующего выполнения привычки
         if habit.last_performed:
-            next_action_date = habit.last_performed + timezone.timedelta(
-                days=habit.execution_interval_day or 0,
-                hours=habit.execution_interval_hour or 0
-            )
-            # Пропуск, если привычку не нужно выполнять сегодня
-            if next_action_date.date() > today:
+            next_action_date = habit.last_performed + timezone.timedelta(days=habit.execution_interval_day)
+            logger.debug(f"Next action date for habit '{habit.title}': {next_action_date}")
+            if next_action_date > today:
+                logger.debug(f"Skipping habit '{habit.title}' since next action date has not arrived.")
                 continue
 
-        # напоминание за 5 минут до времени действия
+        # время напоминания
         reminder_time = action_time_today - timezone.timedelta(minutes=5)
 
-        # Проверка на необходимость отправки напоминания
         if reminder_time <= now < action_time_today:
             chat_id = habit.autor.telegram_chat_id
-            if chat_id:
-                send_habit_reminder(chat_id, habit.title)
-                habit.last_performed = now
-                habit.save()
+            logger.debug(f"Sending reminder for habit '{habit.title}' to chat ID: {chat_id}")
+            # оборот асинхрон в синхрон
+            async_to_sync(send_habit_reminder)(
+                chat_id, habit.title, habit.place, habit.action, habit.time_action, habit.prize
+            )
+            habit.last_performed = now
+            habit.save()
+            logger.debug(f"Habit '{habit.title}' marked as performed at {now}")
+
+    logger.debug("Completed habit reminders check")

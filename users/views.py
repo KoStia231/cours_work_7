@@ -1,14 +1,15 @@
 from rest_framework import viewsets, status, generics
 from rest_framework.exceptions import MethodNotAllowed
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from habits.permissions import IsUser
 from users.models import User
 
 from users.serializers import (
     MyTokenObtainPairSerializer,
-    MyTokenRefreshSerializer, UserSerializer
+    MyTokenRefreshSerializer, UserSerializer, RegisterUserSerializer
 )
 
 
@@ -16,14 +17,13 @@ from users.serializers import (
 class UserCreateView(generics.CreateAPIView):
     """Создание нового юзера"""
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = RegisterUserSerializer
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
-        user = serializer.save(is_active=True)
+        user = serializer.save()
         user.set_password(user.password)
         user.save()
-        return super().perform_create(serializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -32,6 +32,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsUser | IsAdminUser]
 
     def get_queryset(self):
         """

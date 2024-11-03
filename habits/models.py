@@ -24,10 +24,7 @@ class Habit(models.Model):
     is_pleasant = models.BooleanField(default=False, verbose_name='Приятная-True/Полезная-False')
     last_performed = models.DateField(verbose_name='Дата последнего выполнения', **NULLABLE)
     execution_interval_day = models.PositiveIntegerField(default=1, verbose_name='Интервал выполнения (дни)')
-    execution_interval_hour = models.PositiveIntegerField(
-        default=1, verbose_name='Интервал выполнения (часы)', **NULLABLE
-    )
-
+    is_active = models.BooleanField(default=True, verbose_name='Активна/Не активна')
     related = models.ForeignKey(
         'self', on_delete=models.SET_NULL, verbose_name='Связанная с другой привычкой', **NULLABLE
     )

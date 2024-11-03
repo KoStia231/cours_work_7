@@ -6,10 +6,18 @@ from users.models import User
 
 
 #  ------------------------------------------------------ юзеры ------------------------------------------------------
+
+class RegisterUserSerializer(ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'email', 'password']
+
+
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'email', 'phone_number', 'telegram_chat_id',]
+        fields = ['id', 'first_name', 'email', 'phone_number', 'telegram_chat_id']
 
     def validate(self, attrs):
         """Проверка на изменения системных полей"""

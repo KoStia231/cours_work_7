@@ -35,6 +35,24 @@ ROOT_URLCONF = 'config.urls'
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+
+# ------------------------------------------------- Settings Loging ----------------------------------------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'habits.tasks': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
 # --------------------------------------------------- Settings CORS ----------------------------------------------------
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
@@ -161,6 +179,6 @@ CELERY_TASK_TIME_LIMIT = 30 * 60  # Максимальное время на в�
 CELERY_BEAT_SCHEDULE = {
     'send-habit-reminders-every-minute': {
         'task': 'habits.tasks.check_habit_reminders',
-        'schedule': 60.0,  # Проверять каждую минуту
+        'schedule': timedelta(seconds=30),  # Проверять каждые 30 секунд
     },
 }
