@@ -5,6 +5,7 @@
 .DS_Store
 media/course
 media/lesson
+celerybeat-schedule.db
 
 # У каждого может быть свой файл .gitignore это лишь пример как он может выглядеть
 # Важно не добавлять в commit сам файл .gitignore
