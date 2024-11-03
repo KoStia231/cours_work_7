@@ -14,9 +14,9 @@ class RewardAndRelatedValidator:
 
 class ExecutionTimeValidator:
     def __call__(self, value):
-        if value.get('duration', 0) > 120:
+        if value.get('duration', 0) > 2:
             raise serializers.ValidationError(
-                'Время выполнения должно быть не больше 120 минут.'
+                'Время выполнения должно быть не больше 2 минут.'
             )
 
 
