@@ -1,6 +1,8 @@
 from django.utils import timezone
 from rest_framework import serializers
 
+from habits.models import Habit
+
 
 class RewardAndRelatedValidator:
     def __call__(self, value):
