@@ -14,7 +14,7 @@ def check_habit_reminders():
     today = now.date()
 
     logger.debug("Starting habit reminders check")
-    habits = Habit.objects.filter(is_active=True)
+    habits = Habit.objects.filter(is_active=True, autor__isnull=False)
 
     for habit in habits:
         logger.debug(
