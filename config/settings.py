@@ -182,3 +182,6 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': timedelta(seconds=30),  # Проверять каждые 30 секунд
     },
 }
+
+CELERY_TASK_ALWAYS_EAGER = True  # Запуск задач синхронно
+CELERY_EAGER_PROPAGATES_EXCEPTIONS = True  # Исключения будут пробрасываться
