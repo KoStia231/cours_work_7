@@ -1,0 +1,59 @@
+[
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$xFYOIKjIumPBlhmIYGUnNr$WheFtRbdhW3+RzHFI5YrdUV5Opt4wGXRwxoj6p4hp+E=",
+        "last_login": "2024-11-13T06:08:33.595Z",
+        "is_superuser": true,
+        "last_name": "admin",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2024-11-02T14:32:23.507Z",
+        "first_name": "admin",
+        "email": "admin@example.com",
+        "phone_number": null,
+        "telegram_chat_id": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 11,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$ekrAbWfp7zCmLKExOvN4pz$6nwEP+WbUyvmkejrXHzcSdtzN+6htAvVlNbJ8cMkqJY=",
+        "last_login": null,
+        "is_superuser": false,
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-11-02T21:00:14Z",
+        "first_name": "kosta",
+        "email": "kosta@gmail.com",
+        "phone_number": null,
+        "telegram_chat_id": "432458113",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "habits.habit",
+    "pk": 5,
+    "fields": {
+        "is_public": "O",
+        "autor": 11,
+        "title": "тестовая",
+        "place": "тест",
+        "duration": 1,
+        "time_action": "03:32:00",
+        "action": "тест",
+        "prize": "тест",
+        "is_pleasant": false,
+        "last_performed": "2024-11-03",
+        "execution_interval_day": 1,
+        "is_active": true,
+        "related": null
+    }
+}
+]

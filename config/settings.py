@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path='.env.prod')  # для docker .env.prod без docker .env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -145,11 +145,11 @@ AUTH_PASSWORD_VALIDATORS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
     }
 }
 
@@ -170,9 +170,9 @@ LOGOUT_REDIRECT_URL = '/'
 
 # ------------------------------------------------ Настройки для Celery ------------------------------------------------
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = os.getenv('REDIS_LOCATION')  # Например, Redis, который по умолчанию работает на порту 6379
-CELERY_RESULT_BACKEND = os.getenv('REDIS_LOCATION')  # URL-адрес брокера результатов, также Redis
-CELERY_TIMEZONE = TIME_ZONE
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')  # Например, Redis, который по умолчанию работает на порту 6379
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')  # URL-адрес брокера результатов, также Redis
+CELERY_TIMEZONE = os.getenv('CELERY_TIMEZONE')
 CELERY_TASK_TRACK_STARTED = os.getenv('CELERY_TASK_TRACK_STARTED', False).lower() == 'true'
 CELERY_TASK_TIME_LIMIT = 30 * 60  # Максимальное время на выполнение задачи
 
@@ -183,5 +183,7 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-CELERY_TASK_ALWAYS_EAGER = True  # Запуск задач синхронно
-CELERY_EAGER_PROPAGATES_EXCEPTIONS = True  # Исключения будут пробрасываться
+# Запуск задач синхронно
+CELERY_TASK_ALWAYS_EAGER = os.getenv('CELERY_TASK_ALWAYS_EAGER', False).lower() == 'true'
+# Исключения будут пробрасываться
+CELERY_EAGER_PROPAGATES_EXCEPTIONS = os.getenv('CELERY_EAGER_PROPAGATES_EXCEPTIONS', False).lower() == 'true'
